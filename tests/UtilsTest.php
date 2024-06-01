@@ -72,12 +72,4 @@ class UtilsTest extends TestCase
     {
         $this->assertEquals('0.000000065', Utils::toString('6.5e-8'));
     }
-
-    /**
-     * @return void
-     */
-    public function testToReadableString(): void
-    {
-        $this->assertEquals('1.000.000', Utils::toReadableString(1000000));
-    }
 }

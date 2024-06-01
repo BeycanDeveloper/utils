@@ -9,6 +9,15 @@ class Utils
     private const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 
     /**
+     * @param mixed $value
+     * @return bool
+     */
+    public static function isHex(mixed $value): bool
+    {
+        return (is_string($value) && 1 === preg_match('/^(0x)?[a-f0-9]*$/', $value));
+    }
+
+    /**
      *
      * @param float $value
      * @param integer $decimals
@@ -123,14 +132,5 @@ class Utils
         }
 
         return strval(floatval($amount) > 1 ? $amount : rtrim(strval($amount), '0'));
-    }
-
-    /**
-     * @param float $num
-     * @return string
-     */
-    public static function toReadableString(float $num): string
-    {
-        return number_format($num, 0, '.', '.');
     }
 }
