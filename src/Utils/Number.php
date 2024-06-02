@@ -49,6 +49,7 @@ class Number
         }
 
         if (!($number instanceof BigNumber)) {
+            $decimals = is_float($number) && !$this->isSmall($number) ? 0 : $decimals;
             $this->bigNumber = $this->toBigNumberInternal($number, $decimals);
         } else {
             $this->bigNumber = $number;
@@ -107,6 +108,42 @@ class Number
     public function equals(Number $number): bool
     {
         return $this->bigNumber->equals($number->toBigNumber());
+    }
+
+    /**
+     * @param Number $number
+     * @return Number
+     */
+    public function add(Number $number): Number
+    {
+        return new Number($this->bigNumber->add($number->toBigNumber()), $this->decimals);
+    }
+
+    /**
+     * @param Number $number
+     * @return Number
+     */
+    public function sub(Number $number): Number
+    {
+        return new Number($this->bigNumber->subtract($number->toBigNumber()), $this->decimals);
+    }
+
+    /**
+     * @param Number $number
+     * @return Number
+     */
+    public function mul(Number $number): Number
+    {
+        return new Number($this->bigNumber->multiply($number->toBigNumber()), $this->decimals);
+    }
+
+    /**
+     * @param Number $number
+     * @return Number
+     */
+    public function div(Number $number): Number
+    {
+        return new Number($this->bigNumber->divide($number->toBigNumber())[0], $this->decimals);
     }
 
     /**

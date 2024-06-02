@@ -104,4 +104,40 @@ class NumberTest extends TestCase
         $this->assertTrue($this->number1->equals($this->number2));
         $this->assertTrue($this->number1->equals($this->number3));
     }
+
+    /**
+     * @return void
+     */
+    public function testCalc(): void
+    {
+        $this->assertEquals(
+            '0.321907938724615903',
+            $this->number1->add(new Number(0.01))->toString()
+        );
+
+        $this->assertEquals(
+            '0.301907938724615903',
+            $this->number1->sub(new Number(0.01))->toString()
+        );
+
+        $this->assertEquals(
+            '0.623815877449231806',
+            $this->number1->mul(new Number(2))->toString()
+        );
+
+        $this->assertEquals(
+            '0.155953969362307951',
+            $this->number1->div(new Number(2))->toString()
+        );
+
+        $this->assertEquals(
+            '0.077976984681153975',
+            $this->number1->div(new Number(4))->toString()
+        );
+
+        $this->assertEquals(
+            $this->number1->toString(),
+            (new Number('0.1559539693623079515', 19))->mul(new Number(2))->toString()
+        );
+    }
 }
