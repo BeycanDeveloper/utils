@@ -140,4 +140,30 @@ class NumberTest extends TestCase
             (new Number('0.1559539693623079515', 19))->mul(new Number(2))->toString()
         );
     }
+
+    /**
+     * @return void
+     */
+    public function testCalc2(): void
+    {
+        $number1 = new Number(1123.36);
+        $number2 = new Number(1);
+
+        $this->assertEquals(
+            '1124.36',
+            $number1->add($number2)->toString()
+        );
+    }
+
+    /**
+     * @return void
+     */
+    public function testCalc3(): void
+    {
+        $number1 = new Number('0.311907938724615903');
+        $this->assertEquals(
+            '0.623815877449231806',
+            $number1->mul(new Number(2))->toString()
+        );
+    }
 }

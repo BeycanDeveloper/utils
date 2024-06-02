@@ -40,23 +40,23 @@ class Number
      */
     public function __construct(string|float|BigNumber $number, int $decimals = 18)
     {
+        if (is_numeric($number) && $number < 0) {
+            throw new \InvalidArgumentException('Number must be positive!');
+        }
+
         if (is_string($number) && Utils::isHex($number)) {
             $number = $this->toStringInternal($number, $decimals);
         }
 
-        if ($number instanceof BigNumber && '' == $number->toHex(true)) {
-            throw new \InvalidArgumentException('Number must be a valid number.');
-        }
-
         if (!($number instanceof BigNumber)) {
-            $decimals = is_float($number) && !$this->isSmall($number) ? 0 : $decimals;
             $this->bigNumber = $this->toBigNumberInternal($number, $decimals);
         } else {
             $this->bigNumber = $number;
         }
 
         $this->decimals = $decimals;
-        $this->hexNumber = '0x' . $this->bigNumber->toHex(true);
+        $hex = $this->bigNumber->toHex(true);
+        $this->hexNumber = '0x' . ('' !== $hex ? $hex : '0');
         $this->floatNumber = Utils::hexToNumber($this->hexNumber, $decimals);
         $this->stringNumber = $this->toStringInternal($this->hexNumber, $decimals);
     }
@@ -116,7 +116,7 @@ class Number
      */
     public function add(Number $number): Number
     {
-        return new Number($this->bigNumber->add($number->toBigNumber()), $this->decimals);
+        return new Number(bcadd($this->toString(), $number->toString(), $this->decimals));
     }
 
     /**
@@ -125,7 +125,7 @@ class Number
      */
     public function sub(Number $number): Number
     {
-        return new Number($this->bigNumber->subtract($number->toBigNumber()), $this->decimals);
+        return new Number(bcsub($this->toString(), $number->toString(), $this->decimals));
     }
 
     /**
@@ -134,7 +134,7 @@ class Number
      */
     public function mul(Number $number): Number
     {
-        return new Number($this->bigNumber->multiply($number->toBigNumber()), $this->decimals);
+        return new Number(bcmul($this->toString(), $number->toString(), $this->decimals));
     }
 
     /**
@@ -143,7 +143,7 @@ class Number
      */
     public function div(Number $number): Number
     {
-        return new Number($this->bigNumber->divide($number->toBigNumber())[0], $this->decimals);
+        return new Number(bcdiv($this->toString(), $number->toString(), $this->decimals));
     }
 
     /**
@@ -187,7 +187,7 @@ class Number
     {
         $length = bcpow('10', strval($decimals));
         $newValue = gmp_strval(gmp_init($value, 16), 10);
-        return rtrim(bcdiv($newValue, $length, $decimals), '0');
+        return rtrim(rtrim(bcdiv($newValue, $length, $decimals), '0'), '.');
     }
 
     /**

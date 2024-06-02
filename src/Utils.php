@@ -14,7 +14,16 @@ class Utils
      */
     public static function isHex(mixed $value): bool
     {
-        return (is_string($value) && 1 === preg_match('/^(0x)?[a-f0-9]*$/', $value));
+        return (is_string($value) && 1 === preg_match('/^(0x)[a-f0-9]*$/', $value));
+    }
+
+    /**
+     * @param int|string $value
+     * @return string
+     */
+    public static function toHex(int|string $value): string
+    {
+        return '0x' . dechex(intval($value));
     }
 
     /**
