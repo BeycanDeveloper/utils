@@ -48,6 +48,10 @@ class Number
             $number = $this->toStringInternal($number, $decimals);
         }
 
+        if ($this->isScientificNotation($number)) {
+            $number = Utils::toString($number, $decimals);
+        }
+
         if (!($number instanceof BigNumber)) {
             $this->bigNumber = $this->toBigNumberInternal($number, $decimals);
         } else {
@@ -59,6 +63,15 @@ class Number
         $this->hexNumber = '0x' . ('' !== $hex ? $hex : '0');
         $this->floatNumber = Utils::hexToNumber($this->hexNumber, $decimals);
         $this->stringNumber = $this->toStringInternal($this->hexNumber, $decimals);
+    }
+
+    /**
+     * @param mixed $number
+     * @return bool
+     */
+    private function isScientificNotation(mixed $number): bool
+    {
+        return is_numeric($number) && preg_match('/^[+-]?\d+(\.\d+)?[eE][+-]?\d+$/', (string) $number);
     }
 
     /**
