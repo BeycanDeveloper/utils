@@ -31,6 +31,11 @@ class NumberTest extends TestCase
     private Number $number3;
 
     /**
+     * @var Number
+     */
+    private Number $number4;
+
+    /**
      * @return void
      */
     protected function setUp(): void
@@ -39,6 +44,7 @@ class NumberTest extends TestCase
         $this->number1 = new Number('0.311907938724615903');
         $this->number2 = new Number('0x04541e9e224e16df');
         $this->number3 = new Number(new BigInteger('311907938724615903'));
+        $this->number4 = new Number(6.5E-5, 9);
     }
 
     /**
@@ -103,6 +109,7 @@ class NumberTest extends TestCase
     {
         $this->assertTrue($this->number1->equals($this->number2));
         $this->assertTrue($this->number1->equals($this->number3));
+        $this->assertEquals(0.000065, $this->number4->toFloat());
     }
 
     /**

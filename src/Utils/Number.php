@@ -48,6 +48,10 @@ class Number
             $number = $this->toStringInternal($number, $decimals);
         }
 
+        if ($this->isScientificNotation($number)) {
+            $number = Utils::toString($number, $decimals);
+        }
+
         if (!($number instanceof BigNumber)) {
             $this->bigNumber = $this->toBigNumberInternal($number, $decimals);
         } else {
@@ -59,6 +63,15 @@ class Number
         $this->hexNumber = '0x' . ('' !== $hex ? $hex : '0');
         $this->floatNumber = Utils::hexToNumber($this->hexNumber, $decimals);
         $this->stringNumber = $this->toStringInternal($this->hexNumber, $decimals);
+    }
+
+    /**
+     * @param mixed $number
+     * @return bool
+     */
+    private function isScientificNotation(mixed $number): bool
+    {
+        return is_numeric($number) && preg_match('/^[+-]?\d+(\.\d+)?[eE][+-]?\d+$/', (string) $number);
     }
 
     /**
@@ -186,8 +199,23 @@ class Number
     private function toStringInternal(string $value, int $decimals): string
     {
         $length = bcpow('10', strval($decimals));
-        $newValue = gmp_strval(gmp_init($value, 16), 10);
+        $newValue = $this->hexToDec($value);
         return rtrim(rtrim(bcdiv($newValue, $length, $decimals), '0'), '.');
+    }
+
+    /**
+     * @param string $hex
+     * @return string
+     */
+    private function hexToDec(string $hex): string
+    {
+        $dec = '0';
+        $hex = strtolower(preg_replace('/[^0-9a-f]/', '', $hex));
+        $len = strlen($hex);
+        for ($i = 0; $i < $len; $i++) {
+            $dec = bcadd($dec, bcmul(strval(hexdec($hex[$i])), bcpow('16', strval($len - 1 - $i))));
+        }
+        return $dec;
     }
 
     /**
@@ -220,8 +248,6 @@ class Number
             // @phpstan-ignore-next-line
             switch (MATH_BIGINTEGER_MODE) {
                 case $whole::MODE_GMP:
-                    $powerBase = gmp_pow(gmp_init(10), (int) $fractionLength);
-                    break;
                 case $whole::MODE_BCMATH:
                     $powerBase = bcpow('10', (string) $fractionLength, 0);
                     break;
